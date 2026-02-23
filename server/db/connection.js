@@ -1,0 +1,31 @@
+import { MongoClient, ServerApiVersion } from "mongodb";
+import mongoose from "mongoose";
+const URI = process.env.ATLAS_URI || "";
+const client = new MongoClient(URI, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  },
+  appName: "sample-app-nodejs-mern-tutorial",
+});
+
+try {
+  // Connect the client to the server
+  await client.connect();
+  // Send a ping to confirm a successful connection
+  await client.db("admin").command({ ping: 1 });
+  console.log("Pinged your deployment. You successfully connected to MongoDB!");
+} catch (err) {
+  console.error(err);
+}
+// Mongoose connection (for schemas/models)
+try {
+  await mongoose.connect(URI, { dbName: "employees" });
+  console.log("Mongoose connected");
+} catch (err) {
+  console.error("Mongoose connection error:", err);
+}
+let db = client.db("employees");
+
+export default db;
