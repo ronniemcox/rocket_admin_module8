@@ -12,68 +12,20 @@ import Login from "./components/Login";
 import Unauthorized from "./components/Unauthorized";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./index.css";
-
+import Home from "./components/Home";
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     children: [
-      {
-        path: "/",
-        element: (
-          <ProtectedRoute>
-            <RecordList />
-          </ProtectedRoute>
-        ),
-      },
-    ],
-  },
-  {
-    path: "/create",
-    element: <App />,
-    children: [
-      {
-        path: "/create",
-        element: (
-          <ProtectedRoute>
-            <Record />
-          </ProtectedRoute>
-        ),
-      },
-    ],
-  },
-  {
-    path: "/edit/:id",
-    element: <App />,
-    children: [
-      {
-        path: "/edit/:id",
-        element: (
-          <ProtectedRoute>
-            <Record />
-          </ProtectedRoute>
-        ),
-      },
-    ],
-  },
-  {
-    path: "/login",
-    element: <App />,
-    children: [
-      {
-        path: "/login",
-        element: <Login />,
-      },
-    ],
-  },
-  {
-    path: "/unauthorized",
-    element: <App />,
-    children: [
-      {
-        path: "/unauthorized",
-        element: <Unauthorized />,
-      },
+      { path: "/", element: <Home /> },
+      { path: "/agents", element: <RecordList /> },
+      { path: "/create", element: <Record /> },
+      { path: "/edit/:id", element: <Record /> },
+      { path: "/login", element: <Login /> },
+      { path: "/unauthorized", element: <Unauthorized /> },
+      // placeholder for next steps
+      { path: "/transactions", element: <div>Transactions Page (Coming Next)</div> },
     ],
   },
 ]);
