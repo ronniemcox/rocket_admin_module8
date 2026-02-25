@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
+import { Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 const Record = (props) => (
   <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
    <td className="p-4 align-middle">
@@ -45,6 +46,7 @@ const Record = (props) => (
 );
 
 export default function RecordList() {
+  const navigate = useNavigate();
   const [records, setRecords] = useState([]);
 
   // This method fetches the records from the database.
@@ -87,8 +89,14 @@ export default function RecordList() {
 
   // This following section will display the table with the records of individuals.
   return (
+    
     <>
-      <h3 className="text-lg font-semibold p-4">Agent List</h3>
+      <div className="d-flex justify-content-between align-items-center p-4">
+        <h3 className="text-lg font-semibold mb-0">Agent List</h3>
+        <Button variant="primary" onClick={() => navigate("/create")}>
+           Create Agent
+        </Button>
+      </div>
       <div className="border rounded-lg overflow-hidden">
         <div className="relative w-full overflow-auto">
           <table className="w-full caption-bottom text-sm">
