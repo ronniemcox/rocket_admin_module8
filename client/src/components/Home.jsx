@@ -17,7 +17,7 @@ export default function Home() {
                 Manage Rocket Elevators agents (create, edit, delete, and view).
               </Card.Text>
               <Button onClick={() => navigate("/agents")}>
-                Go to Agents
+                Agent Management
               </Button>
             </Card.Body>
           </Card>
@@ -31,7 +31,7 @@ export default function Home() {
                 View the latest transactions and submit new transactions.
               </Card.Text>
               <Button onClick={() => navigate("/transactions")}>
-                Go to Transactions
+                Transaction Management
               </Button>
             </Card.Body>
           </Card>

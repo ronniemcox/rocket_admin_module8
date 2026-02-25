@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-
+import { Card, Button, Row, Col } from "react-bootstrap";
 export default function Navbar() {
   const navigate = useNavigate();
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
@@ -23,20 +23,10 @@ export default function Navbar() {
       <div className="space-x-4">
         {isLoggedIn && (
           <>
-            <Link to="/" className="hover:underline">
-              Agents
-            </Link>
-
-            <Link to="/create" className="hover:underline">
-              Create Agent
-            </Link>
-
-            <button
-              onClick={handleLogout}
-              className="text-red-600 hover:underline"
-            >
-              Logout
-            </button>
+         
+            <Button variant="primary" onClick={handleLogout}>
+               Logout
+            </Button>
           </>
         )}
       </div>
