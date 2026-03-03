@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useNotice } from "../context/NoticeContext"; // <-- adjust path if your folders differ
 
 export default function Record() {
+  const { showNotice } = useNotice();
+
   const [form, setForm] = useState({
     first_name: "",
     last_name: "",
@@ -23,23 +26,29 @@ export default function Record() {
 
       setIsNew(false);
 
-      const response = await fetch(`http://localhost:5050/record/${id}`);
-      if (!response.ok) {
-        console.error("Error fetching record");
-        return;
-      }
+      try {
+        const response = await fetch(`http://localhost:5050/record/${id}`);
+        if (!response.ok) {
+          throw new Error("Error fetching agent record");
+        }
 
-      const record = await response.json();
-      if (!record) {
-        navigate("/");
-        return;
-      }
+        const record = await response.json();
+        if (!record) {
+          showNotice("danger", "Agent not found.", 7000);
+          navigate("/agents");
+          return;
+        }
 
-      setForm(record);
+        setForm(record);
+      } catch (err) {
+        console.error(err);
+        showNotice("danger", err.message || "Failed to load agent.", 7000);
+        navigate("/agents");
+      }
     }
 
     fetchData();
-  }, [params.id, navigate]);
+  }, [params.id, navigate, showNotice]);
 
   function updateForm(value) {
     setForm((prev) => ({ ...prev, ...value }));
@@ -67,11 +76,17 @@ export default function Record() {
       }
 
       if (!response.ok) {
-        throw new Error("Failed to save agent");
+        const text = await response.text().catch(() => "");
+        throw new Error(text || "Failed to save agent");
       }
-    } catch (error) {
-      console.error("Save error:", error);
-    } finally {
+
+      showNotice(
+        "success",
+        isNew ? "Agent created successfully." : "Agent updated successfully.",
+        7000
+      );
+
+      // Clear form only after success (optional, but keeps state clean if user comes back)
       setForm({
         first_name: "",
         last_name: "",
@@ -79,9 +94,15 @@ export default function Record() {
         region: "",
         fee: "",
         rating: "",
-        sales: "",
+        sales: 0,
       });
-      navigate("/");
+
+      // Go back to the Agent List
+      navigate("/agents");
+    } catch (error) {
+      console.error("Save error:", error);
+      showNotice("danger", error.message || "Failed to save agent.", 7000);
+      // IMPORTANT: do NOT navigate and do NOT clear form on error
     }
   }
 
