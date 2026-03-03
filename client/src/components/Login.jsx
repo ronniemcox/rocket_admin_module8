@@ -1,62 +1,72 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Button, Form } from "react-bootstrap";
+import { useNotice } from "../context/NoticeContext";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { showNotice } = useNotice();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  async function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:5050/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const res = await fetch("http://localhost:5050/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (res.ok) {
-      // Successful login → redirect to home (Agent table page)
-      localStorage.setItem("isLoggedIn", "true");
-      navigate("/");
-    } else {
-      // Failed login → redirect to unauthorized page
-      navigate("/unauthorized");
+      if (res.ok) {
+        localStorage.setItem("isLoggedIn", "true");
+        showNotice("success", "Login successful!", 7000);
+
+        // let user see it briefly, then go home
+        window.setTimeout(() => navigate("/"), 800);
+      } else {
+        showNotice("danger", "Login failed. Please try again.", 7000);
+        window.setTimeout(() => navigate("/unauthorized"), 400);
+      }
+    } catch (err) {
+      console.error(err);
+      showNotice("danger", "Server error. Please try again.", 7000);
     }
-  }
+  };
 
   return (
     <div className="max-w-md">
-      <h2 className="text-xl font-bold mb-4">Login</h2>
+      <h2 className="text-xl font-bold mb-3">Login</h2>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-        <label className="flex flex-col gap-1">
-          Email
-          <input
-            className="border p-2 rounded"
+      <Form onSubmit={handleSubmit} className="mt-3">
+        <Form.Group className="mb-3" controlId="loginEmail">
+          <Form.Label>Email</Form.Label>
+          <Form.Control
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            autoComplete="username"
           />
-        </label>
+        </Form.Group>
 
-        <label className="flex flex-col gap-1">
-          Password
-          <input
-            className="border p-2 rounded"
+        <Form.Group className="mb-3" controlId="loginPassword">
+          <Form.Label>Password</Form.Label>
+          <Form.Control
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            autoComplete="current-password"
           />
-        </label>
+        </Form.Group>
 
-        <button className="border p-2 rounded" type="submit">
+        <Button variant="primary" type="submit">
           Sign in
-        </button>
-      </form>
+        </Button>
+      </Form>
     </div>
   );
 }
