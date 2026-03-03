@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-
+import Transactions from "./components/Transactions";
 import App from "./App";
 import "./index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -64,12 +64,9 @@ const router = createBrowserRouter([
         path: "transactions",
         element: (
           <ProtectedRoute>
-            <div className="mt-4">
-              <h2>Transactions</h2>
-              <p>Coming next step.</p>
-            </div>
+            <Transactions />
           </ProtectedRoute>
-        ),
+         ),
       },
 
       // Login + Unauthorized
