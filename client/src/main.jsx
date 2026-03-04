@@ -11,7 +11,7 @@ import RecordList from "./components/RecordList";
 import Login from "./components/Login";
 import Unauthorized from "./components/Unauthorized";
 import ProtectedRoute from "./components/ProtectedRoute";
-
+import CreateUser from "./components/CreateUser";
 import { NoticeProvider } from "./context/NoticeContext";
 
 const router = createBrowserRouter([
@@ -58,7 +58,15 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-
+      //Create User 
+      {
+        path: "create-user",
+        element: (
+          <ProtectedRoute>
+            <CreateUser />
+          </ProtectedRoute>
+        ),
+      },
       // Transactions placeholder for later (so Home button doesn't 404)
       {
         path: "transactions",
