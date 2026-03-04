@@ -5,14 +5,29 @@ import { useNotice } from "../context/NoticeContext";
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-
   const { notice, showNotice } = useNotice();
 
-  const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
-    showNotice("success", "Logged out.", 7000);
-    navigate("/login");
+  const token = localStorage.getItem("session_token") || "";
+  const username = localStorage.getItem("username") || "";
+
+  const handleLogout = async () => {
+    try {
+      // Best effort server-side logout (delete session + clear cookie)
+      await fetch("http://localhost:5050/logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ token }),
+      });
+    } catch (err) {
+      // Even if server fails, we still clear local state
+      console.error(err);
+    } finally {
+      localStorage.removeItem("session_token");
+      localStorage.removeItem("username");
+      showNotice("success", "Logged out.", 7000);
+      navigate("/login");
+    }
   };
 
   return (
@@ -37,11 +52,19 @@ export default function Navbar() {
         </div>
       </div>
 
-      <div>
-        {isLoggedIn && (
-          <Button variant="primary" onClick={handleLogout}>
-            Logout
-          </Button>
+      <div className="d-flex align-items-center gap-2">
+        {token && (
+          <>
+            <span style={{ fontSize: 14, opacity: 0.85 }}>
+              {username ? `Hi, ${username}` : "Hi"}
+            </span>
+            <Button variant="outline-secondary" onClick={() => navigate("/create-user")}>
+              Create User
+            </Button>
+            <Button variant="primary" onClick={handleLogout}>
+              Logout
+            </Button>
+          </>
         )}
       </div>
     </nav>
