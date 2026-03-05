@@ -36,6 +36,20 @@ export default function Home() {
             </Card.Body>
           </Card>
         </Col>
+
+        <Col md={6}>
+          <Card>
+            <Card.Body>
+              <Card.Title>Report</Card.Title>
+              <Card.Text>
+                View sales and transaction trends.
+              </Card.Text>
+              <Button onClick={() => navigate("/report")}>
+                Transaction Management
+              </Button>
+            </Card.Body>
+          </Card>
+        </Col>
       </Row>
     </div>
   );

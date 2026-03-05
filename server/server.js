@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-
+import reportRoutes from "./routes/report.js";
 import records from "./routes/record.js";
 import authRoutes from "./routes/auth.js";
 import transactionRoutes from "./routes/transaction.js";
@@ -20,7 +20,7 @@ app.use(
 
 app.use(express.json());
 app.use(cookieParser());
-
+app.use("/", reportRoutes);
 app.use("/record", records);
 app.use("/", authRoutes);
 app.use("/", transactionRoutes);

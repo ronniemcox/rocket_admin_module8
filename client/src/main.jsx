@@ -13,7 +13,7 @@ import Unauthorized from "./components/Unauthorized";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CreateUser from "./components/CreateUser";
 import { NoticeProvider } from "./context/NoticeContext";
-
+import Report from "./components/Report";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -75,6 +75,15 @@ const router = createBrowserRouter([
             <Transactions />
           </ProtectedRoute>
          ),
+      },
+
+      {
+         path: "report",
+         element: (
+          <ProtectedRoute>
+            <Report />
+          </ProtectedRoute>
+          ),
       },
 
       // Login + Unauthorized
