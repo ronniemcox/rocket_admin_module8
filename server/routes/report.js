@@ -1,5 +1,4 @@
 import express from "express";
-import mongoose from "mongoose";
 import Transaction from "../models/Transaction.js";
 import Agent from "../models/Agent.js";
 
@@ -15,6 +14,9 @@ function toYMD(date) {
 
 router.get("/report-data", async (req, res) => {
   try {
+    // Use the real collection name from the Agent model
+    const agentCollectionName = Agent.collection.name;
+
     // ---- Bar: total transaction amount per agent ----
     const barAgg = await Transaction.aggregate([
       {
@@ -26,7 +28,7 @@ router.get("/report-data", async (req, res) => {
       { $sort: { total: -1 } },
       {
         $lookup: {
-          from: "agents",
+          from: agentCollectionName,
           localField: "_id",
           foreignField: "_id",
           as: "agent",
@@ -83,7 +85,9 @@ router.get("/report-data", async (req, res) => {
     ]);
 
     // Fill missing days with 0
-    const totalsByDay = new Map(lineAgg.map((d) => [d.date, Number(d.total || 0)]));
+    const totalsByDay = new Map(
+      lineAgg.map((d) => [d.date, Number(d.total || 0)])
+    );
 
     const transaction_line_data = [];
     for (let i = 0; i < 14; i++) {
