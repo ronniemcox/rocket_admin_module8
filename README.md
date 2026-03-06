@@ -1,201 +1,139 @@
-# Rocket Elevators Admin — Module 7 (MERN)
+# Rocket Elevators Admin (Module 8)
 
-This project is a Rocket Elevators Back Office Admin application built using the official MongoDB MERN tutorial as a foundation, then adapted to manage Rocket Elevators Agents and secured with a login system.
+Admin portal for Rocket Elevators built with the MERN stack (MongoDB, Express, React, Node).
+Includes Agent Management, Transaction Management, and Session-based authentication.
 
 ---
 
-## Source Tutorial
+## Research: Components, Props, State
 
-MongoDB MERN Tutorial (official):  
-https://www.mongodb.com/resources/languages/mern-stack-tutorial
+### Components
+A component is a reusable building block of a React user interface. Components return UI elements and can contain logic, data, and other components. Complex applications are built by composing many small components together.
+
+### Props
+Props (short for properties) are inputs passed from a parent component to a child component. Props allow components to be reused with different data. Props are read-only inside the component that receives them.
+
+### State
+State is data that belongs to a component and can change over time. When state changes, React automatically re-renders the component to reflect the updated data. State is commonly used for form inputs, API responses, and UI controls like modals.
+
+---
+
+## Features (Module Requirements)
+
+### Home Page
+- Grid layout of cards
+- Agent Management card
+- Transaction card
+
+### Notifications
+Global success and error notifications displayed in the navbar.
+
+### Modal Confirmations
+Confirmation modals exist for:
+- Create agent
+- Update agent
+- Delete agent
+- Submit transaction
+
+### Agent Management
+- Create agents
+- Update agents
+- Delete agents
+- Agent list table
+- Agent sales updated automatically through transactions
+
+### Transaction Management
+- Shows the last 10 transactions
+- Sorted by newest first
+- Displays:
+  - transaction date
+  - transaction amount
+  - agent full name
+- Transaction form:
+  - amount must be positive
+  - dropdown lists all agents by id and full name
+- If an agent is deleted, previous transactions remain visible and display:
+  "Agent no longer active"
+
+### Sessions (Authentication)
+- User logs in through `/login`
+- A session token is created via `/session`
+- Session stored in MongoDB with TTL expiration of 24 hours
+- Token saved in browser cookie
+- Token validated through `/validate_token`
+- Invalid or missing token redirects to login
+- Username displayed in navbar
+- Logout removes the session
 
 ---
 
 ## Tech Stack
 
-- **Backend:** Node.js, Express (ES Modules), MongoDB Atlas, Mongoose
-- **Frontend:** React (Vite), React Router
-- **Database:** MongoDB Atlas
+Frontend
+- React
+- React Router
+- React Bootstrap
+- Vite
+
+Backend
+- Node.js
+- Express
+- MongoDB Atlas
+- Mongoose
 
 ---
 
-## Data Models
+## Setup and Run
 
-### Agent (MongoDB collection: `records`)
+### Start Server
 
-Fields:
-- `first_name` (string)
-- `last_name` (string)
-- `email` (string)
-- `region` (string; allowed values: `north`, `south`, `east`, `west`)
-- `fee` (number)
-- `rating` (number)
-- `sales` (number)
+Navigate to the server folder:
 
-Validation is enforced at the route level using middleware before controller logic executes.
-
----
-
-### User (MongoDB collection: `users`)
-
-Fields:
-- `first_name` (string)
-- `last_name` (string)
-- `email` (string)
-- `password` (string)
-
-This schema is used for login authentication.
-
----
-
-## How to Run the Project Locally
-
-### Backend
-
-```bash
-cd mern/server
-npm install
+npm install  
 npm start
-```
 
-### Frontend
+Server runs on:
 
-```bash
-cd mern/client
-npm install
+http://localhost:5050
+
+---
+
+### Start Client
+
+Navigate to the client folder:
+
+npm install  
 npm run dev
-```
 
-Open in browser:
+Client runs on:
 
-```
 http://localhost:5173
-```
 
 ---
 
-# Documentation — React
+## API Endpoints
 
-### What is the difference between React, React JS, and React Native?
+Authentication
+POST /login  
+POST /logout  
+POST /register
 
-**React** (often called React JS) is a JavaScript library used to build web user interfaces.
+Sessions
+POST /session  
+GET /validate_token
 
-**React JS** simply refers to React when it is used for building web applications in the browser.
+Agents
+GET /record  
+POST /record  
+PATCH /record/:id  
+DELETE /record/:id
 
-**React Native** uses the same component-based model as React, but instead of rendering to the browser DOM, it renders to native mobile UI components for iOS and Android applications.
-
----
-
-### Is React a framework or a library? What is the difference?
-
-React is a **library** focused primarily on building user interfaces.
-
-A **framework** typically provides a full, opinionated structure for building applications (routing, state management, build tooling, etc.). React focuses on the view layer and allows developers to choose additional tools like React Router and Vite separately.
-
----
-
-### What are the differences between HTML and JSX?
-
-**HTML** is a markup language interpreted directly by the browser.
-
-**JSX** is a syntax extension for JavaScript that looks similar to HTML but is compiled into JavaScript (React elements).
-
-Key differences:
-
-- JSX allows embedding JavaScript expressions using `{ }`
-- JSX uses `className` instead of `class`
-- JSX must return a single parent element
-- JSX is compiled before being rendered in the browser
+Transactions
+GET /transaction-data  
+POST /transaction
 
 ---
 
-### What makes React attractive for our case?
+## Notes
 
-React is attractive for this admin application because:
-
-- The UI updates automatically when application state changes
-- Component-based architecture promotes reuse (forms, tables, pages)
-- Faster rendering through a virtual DOM
-- Ideal for dynamic dashboards and CRUD-based admin tools
-
----
-
-# Documentation — MERN Stack
-
-### What are a few alternate tech stacks?
-
-Some alternate full-stack technology stacks include:
-
-- **MEAN:** MongoDB, Express, Angular, Node
-- **LAMP:** Linux, Apache, MySQL, PHP
-- **Django + PostgreSQL + React**
-- **Ruby on Rails + PostgreSQL**
-
----
-
-### Why is MERN a good choice for full development?
-
-MERN is a strong choice because:
-
-- JavaScript is used across the entire stack (frontend and backend)
-- Express simplifies REST API creation
-- MongoDB allows flexible schema design
-- React provides a modern, reactive frontend
-- Development speed is increased by using one primary language
-
----
-
-# MERN Templates Research
-
-### MERN Boilerplate (djizco/mern-boilerplate)
-
-Link:  
-https://github.com/djizco/mern-boilerplate
-
-This template includes authentication with Passport.js and Redux integration. It demonstrates a more production-ready structure with user management and API organization already configured.
-
----
-
-### MERN Starter (moeezali2375/MERN-Starter)
-
-Link:  
-https://github.com/moeezali2375/MERN-Starter
-
-This project uses Vite with React 18 and includes a complete authentication flow. The clean separation between client and server makes it a strong example of scalable MERN architecture.
-
----
-
-# Authentication Flow
-
-- Protected routes: `/`, `/create`, `/edit/:id`
-- If not logged in → redirected to `/login`
-- Successful login → redirected to `/`
-- Failed login → redirected to `/unauthorized`
-- Route protection is implemented using a `ProtectedRoute` wrapper component
-
----
-
-# CRUD Functionality (Agents)
-
-- Create Agent
-- Read Agent list
-- Update Agent
-- Delete Agent
-
-All CRUD operations are connected to MongoDB Atlas and persist data.
-
-Validation is applied at the **route level middleware** before controller execution.
-
----
-
-# Project Status
-
-This project satisfies all core Module 7 grading requirements:
-
-- Private GitHub repository
-- Dev branch workflow
-- MongoDB schemas for Agent and User
-- Login route and authentication flow
-- Protected admin routes
-- Full CRUD functionality
-- Research documentation included
+Development workflow uses feature branches merged into `dev`, then merged into `main` for final delivery.

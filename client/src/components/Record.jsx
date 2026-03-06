@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { Modal, Button } from "react-bootstrap";
+import { useNotice } from "../context/NoticeContext";
 
 export default function Record() {
+  const { showNotice } = useNotice();
+
   const [form, setForm] = useState({
     first_name: "",
     last_name: "",
@@ -13,6 +17,11 @@ export default function Record() {
   });
 
   const [isNew, setIsNew] = useState(true);
+
+  // modal + saving state
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
   const params = useParams();
   const navigate = useNavigate();
 
@@ -23,32 +32,50 @@ export default function Record() {
 
       setIsNew(false);
 
-      const response = await fetch(`http://localhost:5050/record/${id}`);
-      if (!response.ok) {
-        console.error("Error fetching record");
-        return;
-      }
+      try {
+        const response = await fetch(`http://localhost:5050/record/${id}`);
+        if (!response.ok) {
+          const text = await response.text().catch(() => "");
+          throw new Error(text || "Error fetching agent record");
+        }
 
-      const record = await response.json();
-      if (!record) {
-        navigate("/");
-        return;
-      }
+        const record = await response.json();
+        if (!record) {
+          showNotice("danger", "Agent not found.", 7000);
+          navigate("/agents");
+          return;
+        }
 
-      setForm(record);
+        setForm(record);
+      } catch (err) {
+        console.error(err);
+        showNotice("danger", err.message || "Failed to load agent.", 7000);
+        navigate("/agents");
+      }
     }
 
     fetchData();
-  }, [params.id, navigate]);
+  }, [params.id, navigate, showNotice]);
 
   function updateForm(value) {
     setForm((prev) => ({ ...prev, ...value }));
   }
 
-  async function onSubmit(e) {
+  // Intercept submit: open modal instead of saving immediately
+  function onSubmit(e) {
     e.preventDefault();
+    setShowConfirmModal(true);
+  }
+
+  function closeModal() {
+    if (isSaving) return;
+    setShowConfirmModal(false);
+  }
+
+  async function confirmSave() {
     const agent = { ...form };
 
+    setIsSaving(true);
     try {
       let response;
 
@@ -67,11 +94,17 @@ export default function Record() {
       }
 
       if (!response.ok) {
-        throw new Error("Failed to save agent");
+        const text = await response.text().catch(() => "");
+        throw new Error(text || "Failed to save agent");
       }
-    } catch (error) {
-      console.error("Save error:", error);
-    } finally {
+
+      showNotice(
+        "success",
+        isNew ? "Agent created successfully." : "Agent updated successfully.",
+        7000
+      );
+
+      // Optional: clear form after success
       setForm({
         first_name: "",
         last_name: "",
@@ -79,11 +112,24 @@ export default function Record() {
         region: "",
         fee: "",
         rating: "",
-        sales: "",
+        sales: 0,
       });
-      navigate("/");
+
+      setShowConfirmModal(false);
+      navigate("/agents");
+    } catch (error) {
+      console.error("Save error:", error);
+      showNotice("danger", error.message || "Failed to save agent.", 7000);
+      // keep modal open so user can retry or cancel
+    } finally {
+      setIsSaving(false);
     }
   }
+
+  const modalTitle = isNew ? "Confirm Create" : "Confirm Update";
+  const modalBody = isNew
+    ? "Are you sure you want to create this agent?"
+    : "Are you sure you want to update this agent?";
 
   return (
     <>
@@ -159,6 +205,29 @@ export default function Record() {
           className="mt-4 px-4 py-2 border rounded cursor-pointer hover:bg-slate-100"
         />
       </form>
+
+      {/* CONFIRM CREATE/UPDATE MODAL */}
+      <Modal show={showConfirmModal} onHide={closeModal} centered>
+        <Modal.Header closeButton={!isSaving}>
+          <Modal.Title>{modalTitle}</Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body>
+          {modalBody}
+          <div className="mt-2 text-muted" style={{ fontSize: 14 }}>
+            Please confirm to continue.
+          </div>
+        </Modal.Body>
+
+        <Modal.Footer>
+          <Button variant="secondary" onClick={closeModal} disabled={isSaving}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={confirmSave} disabled={isSaving}>
+            {isSaving ? "Saving..." : "Confirm"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 }
